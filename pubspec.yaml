@@ -1,0 +1,77 @@
+name: notte
+description: "KTU Scholar - Complete study companion for KTU students with notes, papers & AI assistant."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Navigation
+  go_router: ^14.0.0
+
+  # Backend - Supabase
+  supabase_flutter: ^2.3.0
+
+  # Local Storage & Offline
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.2
+  connectivity_plus: ^6.0.0
+
+  # HTTP & Downloads
+  dio: ^5.4.0
+
+  # PDF Viewing
+  syncfusion_flutter_pdfviewer: ^24.0.0
+
+  # AI Integration - Gemini
+  google_generative_ai: ^0.4.0
+
+  # UI Components
+  flutter_markdown: ^0.6.20
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  flutter_animate: ^4.5.0
+
+  # Utilities
+  intl: ^0.19.0
+  share_plus: ^8.0.0
+  url_launcher: ^6.2.4
+  package_info_plus: ^5.0.1
+  flutter_local_notifications: ^17.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.8
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/fonts/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
