@@ -1,0 +1,42 @@
+name: Daily KTU Content Scraper
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC (7:30 AM IST)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allow manual triggers
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scripts/requirements.txt
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+      
+      - name: Run scraper
+        run: python scripts/scraper.py
+        timeout-minutes: 60
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Scraper failed. Check logs for details."
+          # Add notification logic here (Slack, Discord, Email, etc.)
