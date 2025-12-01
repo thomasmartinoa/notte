@@ -116,9 +116,17 @@ Content is scraped daily via GitHub Actions:
 
 *Coming soon*
 
+## 📚 Documentation
+
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive AI context document for understanding the entire codebase
+- **[docs/SETUP.md](docs/SETUP.md)** - Complete setup guide for development environment
+- **[docs/API.md](docs/API.md)** - API endpoints and data model documentation
+- **[docs/SCRAPER_GUIDE.md](docs/SCRAPER_GUIDE.md)** - Content scraper configuration guide
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
+
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our contributing guidelines.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## 📄 License
 

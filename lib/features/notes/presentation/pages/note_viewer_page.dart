@@ -3,19 +3,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 /// PDF viewer page for notes
-class NoteViewerPage extends ConsumerWidget {
+class NoteViewerPage extends ConsumerStatefulWidget {
   final String noteId;
 
   const NoteViewerPage({super.key, required this.noteId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Fetch note details and file path from storage
-    final isDownloaded = false; // Placeholder
+  ConsumerState<NoteViewerPage> createState() => _NoteViewerPageState();
+}
 
+class _NoteViewerPageState extends ConsumerState<NoteViewerPage> {
+  bool _isDownloaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // TODO: Check if note is downloaded
+    _checkDownloadStatus();
+  }
+
+  Future<void> _checkDownloadStatus() async {
+    // TODO: Implement download status check
+    setState(() {
+      _isDownloaded = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Note: $noteId'),
+        title: Text('Note: ${widget.noteId}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.bookmark_border),
@@ -31,7 +49,7 @@ class NoteViewerPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: isDownloaded
+      body: _isDownloaded
           ? const Center(
               child: Text('PDF Viewer will be shown here'),
               // SfPdfViewer.file(File(localPath))

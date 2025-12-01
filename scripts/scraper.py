@@ -11,6 +11,7 @@ import time
 import hashlib
 import logging
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass
 from urllib.parse import urljoin, urlparse
@@ -18,6 +19,17 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 from supabase import create_client, Client
+
+# Load .env from project root (parent of scripts folder)
+_env_loaded = False
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+        _env_loaded = True
+except ImportError:
+    pass  # python-dotenv not installed, rely on environment variables
 
 # Configuration
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
@@ -30,6 +42,11 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+if _env_loaded:
+    logger.info(f"Loaded .env from project root")
+if SUPABASE_URL:
+    logger.info(f"Supabase URL configured: {SUPABASE_URL[:30]}...")
 
 # Rate limiting
 REQUEST_DELAY = 2  # seconds between requests
@@ -223,19 +240,59 @@ class KTUScraper:
 
 
 class KTUStudyMaterialsScraper(KTUScraper):
-    """Scraper for KTU study materials websites"""
+    """Scraper for KTU study materials websites
     
-    # Add URLs of KTU resource sites here
-    # Note: Ensure you have permission to scrape these sites
+    HOW TO CONFIGURE:
+    1. Add source URLs to BASE_URLS list below
+    2. Implement site-specific scraping logic in scrape_site()
+    3. Test locally: python scraper.py
+    4. Set GitHub Secrets for automated runs
+    
+    LEGAL NOTE:
+    Only add URLs for sites that:
+    - Allow automated access (check robots.txt)
+    - Have freely distributable educational content
+    - You have permission to use
+    """
+    
+    # =========================================================================
+    # CONFIGURE YOUR SOURCE URLs HERE
+    # =========================================================================
     BASE_URLS = [
-        # Example URLs - replace with actual permitted sources
-        # "https://example-ktu-resources.com/notes",
+        # Example format - uncomment and modify as needed:
+        "https://ktunotes.in/notes/",
+        "https://www.ktustudents.in/",
+        "https://www.keralanotes.com/p/ktu-study-materials.html?m=1",
+        "https://ktuspecial.in/",
+        "https://ktu2024.web.app/",
+        
+        # Add your verified KTU resource URLs here
+        # Make sure you have permission to scrape these sites
+    ]
+    
+    # =========================================================================
+    # Subject code patterns for different regulations
+    # =========================================================================
+    SUBJECT_PATTERNS = [
+        r'([A-Z]{2,3}\d{3})',      # Standard: CST201, MAT101
+        r'([A-Z]{2,4}\d{4})',      # Extended: CSST2001
+        r'(\d{2}[A-Z]{2,3}\d{3})', # Year prefix: 21CST201
     ]
     
     def extract_subject_code(self, text: str) -> Optional[str]:
-        """Extract subject code from text (e.g., CST201, MAT101)"""
-        match = re.search(r'([A-Z]{2,4}\d{3})', text)
-        return match.group(1) if match else None
+        """Extract subject code from text (e.g., CST201, MAT101)
+        
+        Supports multiple KTU subject code formats:
+        - CST201 (standard)
+        - MAT101 (common subjects)
+        - EST110 (engineering sciences)
+        - HUT200 (humanities)
+        """
+        for pattern in self.SUBJECT_PATTERNS:
+            match = re.search(pattern, text.upper())
+            if match:
+                return match.group(1)
+        return None
     
     def extract_module_number(self, text: str) -> int:
         """Extract module number from text"""
