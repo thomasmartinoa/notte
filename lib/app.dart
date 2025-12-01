@@ -19,8 +19,8 @@ class NotteApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
 
       // Theme
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: prefs.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
       // Router

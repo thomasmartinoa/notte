@@ -24,13 +24,14 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.2
+  path: ^1.9.0
   connectivity_plus: ^6.0.0
 
   # HTTP & Downloads
   dio: ^5.4.0
 
   # PDF Viewing
-  syncfusion_flutter_pdfviewer: ^24.0.0
+  syncfusion_flutter_pdfviewer: ^27.1.48
 
   # AI Integration - Gemini
   google_generative_ai: ^0.4.0

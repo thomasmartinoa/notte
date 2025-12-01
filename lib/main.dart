@@ -16,10 +16,11 @@ void main() async {
 
   // Initialize Hive for local storage
   await Hive.initFlutter();
-  await Hive.openBox('preferences');
-  await Hive.openBox('downloads');
+  await Hive.openBox('user_preferences');
+  await Hive.openBox('downloaded_notes');
   await Hive.openBox('bookmarks');
-  await Hive.openBox('cache');
+  await Hive.openBox('search_history');
+  await Hive.openBox('ai_chat_history');
 
   // Initialize Supabase
   await Supabase.initialize(
