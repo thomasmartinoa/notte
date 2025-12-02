@@ -249,7 +249,7 @@ class _SubjectsList extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: subjects.length,
-      separatorBuilder: (_, 2) => const SizedBox(height: 8),
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final subject = subjects[index];
         return _SubjectCard(subject: subject);
