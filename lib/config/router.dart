@@ -44,7 +44,8 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Router provider
 final routerProvider = Provider<GoRouter>((ref) {
-  final prefs = ref.watch(userPreferencesProvider);
+  // Only read once at initialization, don't watch to avoid rebuilding router
+  final prefs = ref.read(userPreferencesProvider);
   
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
