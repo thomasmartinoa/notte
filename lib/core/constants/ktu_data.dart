@@ -1,9 +1,27 @@
-/// KTU University data - Branches, Semesters, and Subjects
+/// KTU University data - Branches, Semesters, Schemes, and Subjects
 /// Based on APJ Abdul Kalam Technological University curriculum
 library;
 
 class KtuData {
   KtuData._();
+
+  /// KTU Curriculum Schemes
+  static const List<Scheme> schemes = [
+    Scheme(
+      id: '2019',
+      name: '2019 Scheme',
+      description: 'For students admitted in 2019-2023',
+      startYear: 2019,
+      endYear: 2023,
+    ),
+    Scheme(
+      id: '2024',
+      name: '2024 Scheme',
+      description: 'For students admitted from 2024 onwards',
+      startYear: 2024,
+      endYear: null, // Current scheme
+    ),
+  ];
 
   /// All engineering branches offered by KTU
   static const List<Branch> branches = [
@@ -485,36 +503,63 @@ class KtuData {
     ),
   ];
 
-  /// Get subjects for a branch and semester
-  static List<Subject> getSubjects(String branchId, int semester) {
+  /// Get subjects for a branch, semester, and scheme
+  static List<Subject> getSubjects(String branchId, int semester, {String? schemeId}) {
+    List<Subject> subjects;
+    
     // For S1 and S2, all branches have common subjects
-    if (semester == 1) return commonSubjectsS1;
-    if (semester == 2) return commonSubjectsS2;
-
-    // For S3 onwards, return branch-specific subjects
-    // Currently only CSE is fully populated, others can be added
-    if (branchId == 'cse') {
+    if (semester == 1) {
+      subjects = commonSubjectsS1;
+    } else if (semester == 2) {
+      subjects = commonSubjectsS2;
+    } else if (branchId == 'cse') {
+      // For S3 onwards, return branch-specific subjects
       switch (semester) {
         case 3:
-          return cseSubjectsS3;
+          subjects = cseSubjectsS3;
+          break;
         case 4:
-          return cseSubjectsS4;
+          subjects = cseSubjectsS4;
+          break;
         case 5:
-          return cseSubjectsS5;
+          subjects = cseSubjectsS5;
+          break;
         case 6:
-          return cseSubjectsS6;
+          subjects = cseSubjectsS6;
+          break;
         case 7:
-          return cseSubjectsS7;
+          subjects = cseSubjectsS7;
+          break;
         case 8:
-          return cseSubjectsS8;
+          subjects = cseSubjectsS8;
+          break;
         default:
-          return [];
+          subjects = [];
       }
+    } else {
+      // TODO: Add subjects for other branches
+      subjects = [];
     }
 
-    // TODO: Add subjects for other branches
-    return [];
+    // Filter by scheme if specified
+    if (schemeId != null) {
+      return subjects.where((s) => s.schemeId == null || s.schemeId == schemeId).toList();
+    }
+    
+    return subjects;
   }
+
+  /// Get scheme by ID
+  static Scheme? getScheme(String id) {
+    try {
+      return schemes.firstWhere((s) => s.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Get current scheme (latest one)
+  static Scheme get currentScheme => schemes.firstWhere((s) => s.isCurrent);
 
   /// Get branch by ID
   static Branch? getBranch(String id) {
@@ -570,6 +615,7 @@ class Subject {
   final String name;
   final int credits;
   final int modules;
+  final String? schemeId; // null means applicable to all schemes
 
   const Subject({
     required this.id,
@@ -577,5 +623,25 @@ class Subject {
     required this.name,
     required this.credits,
     required this.modules,
+    this.schemeId,
   });
+}
+
+/// Scheme model (2019, 2024, etc.)
+class Scheme {
+  final String id;
+  final String name;
+  final String description;
+  final int startYear;
+  final int? endYear; // null means current/ongoing scheme
+
+  const Scheme({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.startYear,
+    this.endYear,
+  });
+
+  bool get isCurrent => endYear == null;
 }

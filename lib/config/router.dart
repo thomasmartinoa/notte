@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../features/onboarding/presentation/pages/scheme_selection_page.dart';
 import '../features/onboarding/presentation/pages/branch_selection_page.dart';
 import '../features/onboarding/presentation/pages/semester_selection_page.dart';
 import '../features/notes/presentation/pages/notes_page.dart';
@@ -23,6 +24,7 @@ class AppRoutes {
 
   static const String splash = '/';
   static const String onboarding = '/onboarding';
+  static const String schemeSelection = '/scheme-selection';
   static const String branchSelection = '/branch-selection';
   static const String semesterSelection = '/semester-selection';
   static const String home = '/home';
@@ -54,6 +56,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.schemeSelection,
+        name: 'schemeSelection',
+        builder: (context, state) => const SchemeSelectionPage(),
       ),
       GoRoute(
         path: AppRoutes.branchSelection,

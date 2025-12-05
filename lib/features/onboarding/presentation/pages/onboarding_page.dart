@@ -51,12 +51,12 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      context.go(AppRoutes.branchSelection);
+      context.go(AppRoutes.schemeSelection);
     }
   }
 
   void _onSkip() {
-    context.go(AppRoutes.branchSelection);
+    context.go(AppRoutes.schemeSelection);
   }
 
   @override

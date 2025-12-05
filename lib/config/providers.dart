@@ -111,12 +111,14 @@ final aiServiceProvider = Provider<AIService>((ref) {
 class UserPreferences {
   final String? branchId;
   final int? semester;
+  final String? schemeId; // '2019' or '2024'
   final bool isDarkMode;
   final bool hasCompletedOnboarding;
 
   const UserPreferences({
     this.branchId,
     this.semester,
+    this.schemeId,
     this.isDarkMode = false,
     this.hasCompletedOnboarding = false,
   });
@@ -124,12 +126,14 @@ class UserPreferences {
   UserPreferences copyWith({
     String? branchId,
     int? semester,
+    String? schemeId,
     bool? isDarkMode,
     bool? hasCompletedOnboarding,
   }) {
     return UserPreferences(
       branchId: branchId ?? this.branchId,
       semester: semester ?? this.semester,
+      schemeId: schemeId ?? this.schemeId,
       isDarkMode: isDarkMode ?? this.isDarkMode,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
     );
@@ -144,6 +148,7 @@ class UserPreferencesNotifier extends Notifier<UserPreferences> {
     return UserPreferences(
       branchId: box.get('branch_id'),
       semester: box.get('semester'),
+      schemeId: box.get('scheme_id'),
       isDarkMode: box.get('is_dark_mode', defaultValue: false),
       hasCompletedOnboarding: box.get('has_completed_onboarding', defaultValue: false),
     );
@@ -159,6 +164,12 @@ class UserPreferencesNotifier extends Notifier<UserPreferences> {
     final box = ref.read(userPreferencesBoxProvider);
     await box.put('semester', semester);
     state = state.copyWith(semester: semester);
+  }
+
+  Future<void> setScheme(String schemeId) async {
+    final box = ref.read(userPreferencesBoxProvider);
+    await box.put('scheme_id', schemeId);
+    state = state.copyWith(schemeId: schemeId);
   }
 
   Future<void> setDarkMode(bool isDarkMode) async {
