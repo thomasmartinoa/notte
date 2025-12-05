@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../config/providers.dart';
+import '../../../../shared/widgets/pdf_viewer_page.dart';
 
 /// Question papers page
 class PapersPage extends ConsumerStatefulWidget {
@@ -198,7 +198,7 @@ class _PaperCard extends StatelessWidget {
 
   const _PaperCard({required this.paper});
 
-  Future<void> _openPdf(BuildContext context) async {
+  void _viewPdf(BuildContext context) {
     if (paper.pdfUrl == null || paper.pdfUrl!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('PDF not available')),
@@ -206,24 +206,16 @@ class _PaperCard extends StatelessWidget {
       return;
     }
 
-    final uri = Uri.parse(paper.pdfUrl!);
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not open PDF')),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PdfViewerPage(
+          pdfUrl: paper.pdfUrl!,
+          title: paper.subjectName,
+          subtitle: '${paper.subjectCode} • ${paper.year} ${paper.examType}',
+        ),
+      ),
+    );
   }
 
   @override
@@ -254,11 +246,11 @@ class _PaperCard extends StatelessWidget {
         ),
         subtitle: Text('${paper.subjectCode} • ${paper.year} ${paper.examType}'),
         trailing: IconButton(
-          icon: const Icon(Icons.open_in_new),
-          onPressed: () => _openPdf(context),
-          tooltip: 'Open PDF',
+          icon: const Icon(Icons.visibility),
+          onPressed: () => _viewPdf(context),
+          tooltip: 'View PDF',
         ),
-        onTap: () => _openPdf(context),
+        onTap: () => _viewPdf(context),
       ),
     );
   }
