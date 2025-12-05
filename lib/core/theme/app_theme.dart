@@ -128,9 +128,16 @@ class AppTheme {
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontSize: 14,
+          color: AppColors.textPrimaryLight,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 14,
+          color: AppColors.primary,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: AppColors.dividerLight),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -269,9 +276,16 @@ class AppTheme {
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontSize: 14,
+          color: AppColors.textPrimaryDark,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 14,
+          color: AppColors.primaryLight,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: AppColors.dividerDark),
         ),
       ),
       dividerTheme: const DividerThemeData(

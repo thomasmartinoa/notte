@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/ktu_data.dart';
 import '../../../../config/providers.dart';
 
 /// Settings page
@@ -10,6 +12,13 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final prefs = ref.watch(userPreferencesProvider);
+
+    // Find branch name from ID
+    String branchName = 'Not set';
+    if (prefs.branchId != null) {
+      final branch = KtuData.branches.where((b) => b.id == prefs.branchId).firstOrNull;
+      branchName = branch?.shortName ?? prefs.branchId!.toUpperCase();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -36,11 +45,11 @@ class SettingsPage extends ConsumerWidget {
             leading: const Icon(Icons.school),
             title: const Text('Branch & Semester'),
             subtitle: Text(
-              '${prefs.branchId?.toUpperCase() ?? 'Not set'} • Semester ${prefs.semester ?? '-'}',
+              '$branchName • Semester ${prefs.semester ?? '-'}',
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // Navigate to branch/semester selection
+              _showBranchSemesterSheet(context, ref);
             },
           ),
 
@@ -88,6 +97,19 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showBranchSemesterSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => _BranchSemesterSheet(ref: ref),
     );
   }
 
@@ -148,6 +170,191 @@ class _SectionHeader extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
       ),
+    );
+  }
+}
+
+/// Bottom sheet for changing branch and semester
+class _BranchSemesterSheet extends ConsumerStatefulWidget {
+  final WidgetRef ref;
+
+  const _BranchSemesterSheet({required this.ref});
+
+  @override
+  ConsumerState<_BranchSemesterSheet> createState() => _BranchSemesterSheetState();
+}
+
+class _BranchSemesterSheetState extends ConsumerState<_BranchSemesterSheet> {
+  String? _selectedBranch;
+  int? _selectedSemester;
+
+  @override
+  void initState() {
+    super.initState();
+    final prefs = widget.ref.read(userPreferencesProvider);
+    _selectedBranch = prefs.branchId;
+    _selectedSemester = prefs.semester;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            
+            // Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Change Branch & Semester',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(),
+
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Branch section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Select Branch',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+                    
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: KtuData.branches.map((branch) {
+                        final isSelected = _selectedBranch == branch.id;
+                        return ChoiceChip(
+                          label: Text(branch.shortName),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedBranch = selected ? branch.id : null;
+                            });
+                          },
+                          selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                          labelStyle: TextStyle(
+                            color: isSelected 
+                                ? AppColors.primary 
+                                : Theme.of(context).colorScheme.onSurface,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Semester section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Select Semester',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: KtuData.semesters.map((semester) {
+                        final isSelected = _selectedSemester == semester.number;
+                        return ChoiceChip(
+                          label: Text('S${semester.number}'),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedSemester = selected ? semester.number : null;
+                            });
+                          },
+                          selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                          labelStyle: TextStyle(
+                            color: isSelected 
+                                ? AppColors.primary 
+                                : Theme.of(context).colorScheme.onSurface,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
+
+            // Save button
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _selectedBranch != null && _selectedSemester != null
+                      ? () async {
+                          final notifier = widget.ref.read(userPreferencesProvider.notifier);
+                          await notifier.setBranch(_selectedBranch!);
+                          await notifier.setSemester(_selectedSemester!);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Preferences updated successfully'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  child: const Text('Save Changes'),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -15,6 +15,7 @@ import '../features/syllabus/presentation/pages/syllabus_page.dart';
 import '../features/search/presentation/pages/search_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../shared/widgets/main_scaffold.dart';
+import 'providers.dart';
 
 /// Route names
 class AppRoutes {
@@ -41,9 +42,11 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Router provider
 final routerProvider = Provider<GoRouter>((ref) {
+  final prefs = ref.watch(userPreferencesProvider);
+  
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.onboarding,
+    initialLocation: prefs.hasCompletedOnboarding ? AppRoutes.home : AppRoutes.onboarding,
     debugLogDiagnostics: true,
     routes: [
       // Onboarding flow

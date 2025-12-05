@@ -185,3 +185,68 @@ final themeModeProvider = Provider<ThemeMode>((ref) {
   final prefs = ref.watch(userPreferencesProvider);
   return prefs.isDarkMode ? ThemeMode.dark : ThemeMode.light;
 });
+
+/// Question paper model
+class QuestionPaper {
+  final String id;
+  final String subjectCode;
+  final String subjectName;
+  final int semester;
+  final String? branch;
+  final int year;
+  final String examType;
+  final String? pdfUrl;
+  final DateTime? createdAt;
+
+  const QuestionPaper({
+    required this.id,
+    required this.subjectCode,
+    required this.subjectName,
+    required this.semester,
+    this.branch,
+    required this.year,
+    required this.examType,
+    this.pdfUrl,
+    this.createdAt,
+  });
+
+  factory QuestionPaper.fromJson(Map<String, dynamic> json) {
+    return QuestionPaper(
+      id: json['id']?.toString() ?? '',
+      subjectCode: json['subject_code'] ?? '',
+      subjectName: json['subject_name'] ?? '',
+      semester: json['semester'] ?? 1,
+      branch: json['branch'],
+      year: json['year'] ?? DateTime.now().year,
+      examType: json['exam_type'] ?? 'Regular',
+      pdfUrl: json['pdf_url'],
+      createdAt: json['created_at'] != null 
+          ? DateTime.tryParse(json['created_at']) 
+          : null,
+    );
+  }
+}
+
+/// Question papers provider - fetches from Supabase based on user preferences
+final questionPapersProvider = FutureProvider.autoDispose<List<QuestionPaper>>((ref) async {
+  final supabase = ref.watch(supabaseProvider);
+  final prefs = ref.watch(userPreferencesProvider);
+  
+  final semester = prefs.semester ?? 1;
+  
+  try {
+    final response = await supabase
+        .from(ApiEndpoints.questionPapersTable)
+        .select()
+        .eq('semester', semester)
+        .order('year', ascending: false)
+        .order('subject_name');
+    
+    return (response as List)
+        .map((json) => QuestionPaper.fromJson(json))
+        .toList();
+  } catch (e) {
+    print('Error fetching question papers: $e');
+    return [];
+  }
+});
